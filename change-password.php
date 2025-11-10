@@ -1,183 +1,187 @@
-
-<?php 
+<?php
 session_start();
 error_reporting(0);
 include('includes/config.php');
-if (strlen($_SESSION['bbdmsdid']==0)) {
-  header('location:logout.php');
-  } else{
-
-if(isset($_POST['change']))
-{
-$uid=$_SESSION['bbdmsdid'];
-$cpassword=md5($_POST['currentpassword']);
+if(strlen($_SESSION['alogin'])==0)
+	{	
+header('location:index.php');
+}
+else{
+// Code for change password	
+if(isset($_POST['submit']))
+	{
+$password=md5($_POST['password']);
 $newpassword=md5($_POST['newpassword']);
-$sql ="SELECT ID FROM tblblooddonars WHERE id=:uid and Password=:cpassword";
+$username=$_SESSION['alogin'];
+$sql ="SELECT Password FROM tbladmin WHERE UserName=:username and Password=:password";
 $query= $dbh -> prepare($sql);
-$query-> bindParam(':uid', $uid, PDO::PARAM_STR);
-$query-> bindParam(':cpassword', $cpassword, PDO::PARAM_STR);
+$query-> bindParam(':username', $username, PDO::PARAM_STR);
+$query-> bindParam(':password', $password, PDO::PARAM_STR);
 $query-> execute();
 $results = $query -> fetchAll(PDO::FETCH_OBJ);
-
 if($query -> rowCount() > 0)
 {
-$con="update tblblooddonars set Password=:newpassword where id=:uid";
+$con="update tbladmin set Password=:newpassword where UserName=:username";
 $chngpwd1 = $dbh->prepare($con);
-$chngpwd1-> bindParam(':uid', $uid, PDO::PARAM_STR);
+$chngpwd1-> bindParam(':username', $username, PDO::PARAM_STR);
 $chngpwd1-> bindParam(':newpassword', $newpassword, PDO::PARAM_STR);
 $chngpwd1->execute();
-
-echo '<script>alert("Your password successully changed")</script>';
-} else {
-echo '<script>alert("Your current password is wrong")</script>';
-
+$msg="Your Password succesfully changed";
+}
+else {
+$error="Your current password is not valid.";	
 }
 }
+?>
 
-  ?>
-<!DOCTYPE html>
-<html lang="zxx">
+<!doctype html>
+<html lang="en" class="no-js">
 
 <head>
-	<title>Blood Bank Donar Management System !! Change Password</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#3e454c">
 	
-	<script>
-		addEventListener("load", function () {
-			setTimeout(hideURLbar, 0);
-		}, false);
+	<title>BBDMS | Admin Change Password</title>
 
-		function hideURLbar() {
-			window.scrollTo(0, 1);
-		}
-	</script>
-	<script type="text/javascript">
-function checkpass()
+	<!-- Font awesome -->
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<!-- Sandstone Bootstrap CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<!-- Bootstrap Datatables -->
+	<link rel="stylesheet" href="css/dataTables.bootstrap.min.css">
+	<!-- Bootstrap social button library -->
+	<link rel="stylesheet" href="css/bootstrap-social.css">
+	<!-- Bootstrap select -->
+	<link rel="stylesheet" href="css/bootstrap-select.css">
+	<!-- Bootstrap file input -->
+	<link rel="stylesheet" href="css/fileinput.min.css">
+	<!-- Awesome Bootstrap checkbox -->
+	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
+	<!-- Admin Stye -->
+	<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript">
+function valid()
 {
-if(document.changepassword.newpassword.value!=document.changepassword.confirmpassword.value)
+if(document.chngpwd.newpassword.value!= document.chngpwd.confirmpassword.value)
 {
-alert('New Password and Confirm Password field does not match');
-document.changepassword.confirmpassword.focus();
+alert("New Password and Confirm Password Field do not match  !!");
+document.chngpwd.confirmpassword.focus();
 return false;
 }
 return true;
-}   
-
+}
 </script>
+  <style>
+		.errorWrap {
+    padding: 10px;
+    margin: 0 0 20px 0;
+    background: #fff;
+    border-left: 4px solid #dd3d36;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+}
+.succWrap{
+    padding: 10px;
+    margin: 0 0 20px 0;
+    background: #fff;
+    border-left: 4px solid #5cb85c;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+}
+		</style>
 
-	<!-- Custom-Files -->
-	<link rel="stylesheet" href="css/bootstrap.css">
-	<!-- Bootstrap-Core-CSS -->
-	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
-	<!-- Style-CSS -->
-	<link rel="stylesheet" href="css/fontawesome-all.css">
-	<!-- Font-Awesome-Icons-CSS -->
-	<!-- //Custom-Files -->
-
-	<!-- Web-Fonts -->
-	<link href="//fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&amp;subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese"
-	    rel="stylesheet">
-	<link href="//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese"
-	    rel="stylesheet">
-	<!-- //Web-Fonts -->
 
 </head>
 
 <body>
 	<?php include('includes/header.php');?>
+	<div class="ts-main-content">
+	<?php include('includes/leftbar.php');?>
+		<div class="content-wrapper">
+			<div class="container-fluid">
 
-	<!-- banner 2 -->
-	<div class="inner-banner-w3ls">
-		<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+					
+						<h2 class="page-title">Change Password</h2>
 
-		</div>
-		<!-- //banner 2 -->
-	</div>
-	<!-- page details -->
-	<div class="breadcrumb-agile">
-		<div aria-label="breadcrumb">
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item">
-					<a href="index.php">Home</a>
-				</li>
-				<li class="breadcrumb-item active" aria-current="page">Change Password</li>
-			</ol>
-		</div>
-	</div>
-	<!-- //page details -->
+						<div class="row">
+							<div class="col-md-10">
+								<div class="panel panel-default">
+									<div class="panel-heading">Form fields</div>
+									<div class="panel-body">
+										<form method="post" name="chngpwd" class="form-horizontal" onSubmit="return valid();">
+										
+											
+  	        	  <?php if($error){?><div class="errorWrap"><strong>ERROR</strong>:<?php echo htmlentities($error); ?> </div><?php } 
+				else if($msg){?><div class="succWrap"><strong>SUCCESS</strong>:<?php echo htmlentities($msg); ?> </div><?php }?>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Current Password</label>
+												<div class="col-sm-8">
+													<input type="password" class="form-control" name="password" id="password" required>
+												</div>
+											</div>
+											<div class="hr-dashed"></div>
+											
+											<div class="form-group">
+												<label class="col-sm-4 control-label">New Password</label>
+												<div class="col-sm-8">
+													<input type="password" class="form-control" name="newpassword" id="newpassword" required>
+												</div>
+											</div>
+											<div class="hr-dashed"></div>
 
-	<!-- contact -->
-	<div class="appointment py-5">
-		<div class="py-xl-5 py-lg-3">
-			<div class="w3ls-titles text-center mb-5">
-				<h3 class="title">Change Password</h3>
-				<span>
-					<i class="fas fa-user-md"></i>
-				</span>
-			</div>
-			<div class="d-flex">
-				<div class="appoint-img">
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Confirm Password</label>
+												<div class="col-sm-8">
+													<input type="password" class="form-control" name="confirmpassword" id="confirmpassword" required>
+												</div>
+											</div>
+											<div class="hr-dashed"></div>
+										
+								
+											
+											<div class="form-group">
+												<div class="col-sm-8 col-sm-offset-4">
+								
+													<button class="btn btn-primary" name="submit" type="submit">Save changes</button>
+												</div>
+											</div>
 
-				</div>
-				<div class="contact-right-w3l appoint-form">
-					<h5 class="title-w3 text-center mb-5">Reset your password if needed</h5>
-					<form action="#" method="post" onsubmit="return checkpass();" name="changepassword">
+										</form>
+
+									</div>
+								</div>
+							</div>
+							
+						</div>
 						
-						<div class="form-group">
-							<label for="recipient-name" class="col-form-label">Current Password</label>
-							<input type="password" class="form-control" name="currentpassword" id="currentpassword"required='true'>
-						</div>
-						<div class="form-group">
-							<label for="recipient-phone" class="col-form-label">New Password</label>
-							<input type="password" name="newpassword"  class="form-control" required="true">
-						</div>
-						<div class="form-group">
-							<label for="recipient-phone" class="col-form-label">Confirm Password</label>
-							<input type="password" class="form-control" name="confirmpassword" id="confirmpassword"  required='true'>
-						</div>
-						
-						<input type="submit" value="Update" name="change" class="btn_apt">
-					</form>
+					
+
+					</div>
 				</div>
-				<div class="clerafix"></div>
+				
+			
 			</div>
 		</div>
 	</div>
-	<!-- //contact -->
 
-	<?php include('includes/footer.php');?>
-	<!-- Js files -->
-	<!-- JavaScript -->
-	<script src="js/jquery-2.2.3.min.js"></script>
-	<!-- Default-JavaScript-File -->
-
-	<!--start-date-piker-->
-	<link rel="stylesheet" href="css/jquery-ui.css" />
-	<script src="js/jquery-ui.js"></script>
-	<script>
-		$(function () {
-			$("#datepicker,#datepicker1").datepicker();
-		});
-	</script>
-	<!-- //End-date-piker -->
-
-	<!-- fixed navigation -->
-	<script src="js/fixed-nav.js"></script>
-	<!-- //fixed navigation -->
-
-	<!-- smooth scrolling -->
-	<script src="js/SmoothScroll.min.js"></script>
-	<!-- move-top -->
-	<script src="js/move-top.js"></script>
-	<!-- easing -->
-	<script src="js/easing.js"></script>
-	<!--  necessary snippets for few javascript files -->
-	<script src="js/medic.js"></script>
-
-	<script src="js/bootstrap.js"></script>
-	<!-- Necessary-JavaScript-File-For-Bootstrap -->
-
-	<!-- //Js files -->
+	<!-- Loading Scripts -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	<script src="js/Chart.min.js"></script>
+	<script src="js/fileinput.js"></script>
+	<script src="js/chartData.js"></script>
+	<script src="js/main.js"></script>
 
 </body>
 
-</html><?php } ?>
+</html>
+<?php } ?>

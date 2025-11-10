@@ -9,23 +9,23 @@ header('location:index.php');
 else{
 // Code for change password	
 if(isset($_POST['submit']))
-  {
-    $adminid=$_SESSION['alogin'];
-    $AName=$_POST['adminname'];
-  $mobno=$_POST['mobilenumber'];
-  $email=$_POST['email'];
-  $sql="update tbladmin set AdminName=:adminname,MobileNumber=:mobilenumber,Email=:email where UserName=:aid";
-     $query = $dbh->prepare($sql);
-     $query->bindParam(':adminname',$AName,PDO::PARAM_STR);
-     $query->bindParam(':email',$email,PDO::PARAM_STR);
-     $query->bindParam(':mobilenumber',$mobno,PDO::PARAM_STR);
-     $query->bindParam(':aid',$adminid,PDO::PARAM_STR);
+{
+$bloodgroup=$_POST['bloodgroup'];
+$sql="INSERT INTO  tblbloodgroup(BloodGroup) VALUES(:bloodgroup)";
+$query = $dbh->prepare($sql);
+$query->bindParam(':bloodgroup',$bloodgroup,PDO::PARAM_STR);
 $query->execute();
+$lastInsertId = $dbh->lastInsertId();
+if($lastInsertId)
+{
+$msg="Blood Group Created successfully";
+}
+else 
+{
+$error="Something went wrong. Please try again";
+}
 
-    echo '<script>alert("Your profile has been updated")</script>';
-    echo "<script>window.location.href ='profile.php'</script>";
-
-  }
+}
 ?>
 
 <!doctype html>
@@ -39,7 +39,7 @@ $query->execute();
 	<meta name="author" content="">
 	<meta name="theme-color" content="#3e454c">
 	
-	<title>BBDMS | Admin Change Password</title>
+	<title>BBDMS | Admin add-bloodgroup</title>
 
 	<!-- Font awesome -->
 	<link rel="stylesheet" href="css/font-awesome.min.css">
@@ -57,7 +57,6 @@ $query->execute();
 	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
 	<!-- Admin Stye -->
 	<link rel="stylesheet" href="css/style.css">
-
   <style>
 		.errorWrap {
     padding: 10px;
@@ -90,72 +89,33 @@ $query->execute();
 				<div class="row">
 					<div class="col-md-12">
 					
-						<h2 class="page-title">Admin Profile</h2>
+						<h2 class="page-title">Add Blood Group </h2>
 
 						<div class="row">
 							<div class="col-md-10">
 								<div class="panel panel-default">
 									<div class="panel-heading">Form fields</div>
 									<div class="panel-body">
-										<form method="post" class="form-horizontal" onSubmit="return valid();">
+										<form method="post" name="chngpwd" class="form-horizontal" onSubmit="return valid();">
 										
 											
-  	        	 <?php
-
-$sql="SELECT * from  tbladmin";
-$query = $dbh -> prepare($sql);
-$query->execute();
-$results=$query->fetchAll(PDO::FETCH_OBJ);
-$cnt=1;
-if($query->rowCount() > 0)
-{
-foreach($results as $row)
-{               ?>
-											
+  	        	  <?php if($error){?><div class="errorWrap"><strong>ERROR</strong>:<?php echo htmlentities($error); ?> </div><?php } 
+				else if($msg){?><div class="succWrap"><strong>SUCCESS</strong>:<?php echo htmlentities($msg); ?> </div><?php }?>
+											<div class="form-group">
+												<label class="col-sm-4 control-label">Blood Group</label>
+												<div class="col-sm-8">
+													<input type="text" class="form-control" name="bloodgroup" id="bloodgroup" required>
+												</div>
+											</div>
 											<div class="hr-dashed"></div>
 											
-											<div class="form-group">
-												<label class="col-sm-4 control-label">Admin Name</label>
-												<div class="col-sm-8">
-													<input type="text" name="adminname" value="<?php  echo $row->AdminName;?>" class="form-control" required='true'>
-												</div>
-											</div>
-											<div class="hr-dashed"></div>
-
-											<div class="form-group">
-												<label class="col-sm-4 control-label">User Name</label>
-												<div class="col-sm-8">
-													<input type="text" name="username" value="<?php  echo $row->UserName;?>" class="form-control" readonly="">
-												</div>
-											</div>
-											<div class="hr-dashed"></div>
-										<div class="form-group">
-												<label class="col-sm-4 control-label">Contact Number</label>
-												<div class="col-sm-8">
-													<input type="text" name="mobilenumber" value="<?php  echo $row->MobileNumber;?>"  class="form-control" maxlength='10' required='true' pattern="[0-9]+">
-												</div>
-											</div>
-											<div class="hr-dashed"></div>
-											<div class="form-group">
-												<label class="col-sm-4 control-label">Email</label>
-												<div class="col-sm-8">
-													<input type="email" name="email" value="<?php  echo $row->Email;?>" class="form-control" required='true'>
-												</div>
-											</div>
-											<div class="hr-dashed"></div>
-								<div class="hr-dashed"></div>
-											<div class="form-group">
-												<label class="col-sm-4 control-label">Admin Registration Date</label>
-												<div class="col-sm-8">
-													 <input type="text" name="" value="<?php  echo $row->AdminRegdate;?>" readonly="" class="form-control">
-												</div>
-											</div>
-											<div class="hr-dashed"></div>
-											<?php $cnt=$cnt+1;}} ?>
+										
+								
+											
 											<div class="form-group">
 												<div class="col-sm-8 col-sm-offset-4">
 								
-													<button class="btn btn-primary" name="submit" type="submit">Save changes</button>
+													<button class="btn btn-primary" name="submit" type="submit">Submit</button>
 												</div>
 											</div>
 
